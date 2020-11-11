@@ -1,0 +1,394 @@
+//
+//
+// Shader Model 4
+// Fragment Shader
+//
+// id: 3800 - fxc/glsl_SM_4_0_WeightedCloth.hlsl_PS_ps40_weighted_forward_lighting_no_clip_HDR.glsl
+//
+
+#version 150
+#extension GL_ARB_explicit_attrib_location : require
+#extension GL_ARB_shader_bit_encoding : require
+
+float saturate(float x) { return min(x < 0.f ? 0.f : x, 1.f); }
+vec2 saturate(vec2 x) { return min(mix(x, vec2(0), lessThan(x, vec2(0))), vec2(1)); }
+vec3 saturate(vec3 x) { return min(mix(x, vec3(0), lessThan(x, vec3(0))), vec3(1)); }
+vec4 saturate(vec4 x) { return min(mix(x, vec4(0), lessThan(x, vec4(0))), vec4(1)); }
+
+in vec4 vsOut_T0;
+flat in vec4 vsOut_T9;
+flat in vec4 vsOut_P1;
+in vec4 vsOut_T1;
+in vec4 vsOut_T2;
+in vec4 vsOut_T3;
+in vec4 vsOut_T4;
+in vec4 vsOut_T5;
+flat in vec4 vsOut_T6;
+flat in vec4 vsOut_T7;
+
+layout(location = 0) out vec4 color0;
+layout(location = 1) out vec4 color1;
+
+uniform sampler2D s_diffuse_map;
+uniform sampler2D s_specular_colour_map;
+uniform sampler2D s_fire_map;
+uniform samplerCube s_environment;
+uniform sampler2D s_colour_mask_map;
+uniform sampler2D s_normal_map;
+uniform sampler2D s_gloss_map;
+uniform sampler2D s_decal_dirt_mask;
+uniform sampler2D s_decal_dirt_map;
+uniform sampler2D normal0_sampler;
+uniform sampler2D normal1_sampler;
+uniform sampler2D s_diffuse_damage_map;
+
+layout(std140) uniform camera_VS_PS
+{
+  vec4 data[36];
+} cb0;
+layout(std140) uniform lighting_VS_PS
+{
+  vec4 data[13];
+} cb1;
+layout(std140) uniform rigid_config_PS
+{
+  vec4 data[6];
+} cb2;
+layout(std140) uniform rigid_faction_colours
+{
+  vec4 data[4];
+} cb3;
+
+void main()
+{
+  vec4 r0;
+  vec4 r1;
+  vec4 r2;
+  vec4 r3;
+  vec4 r4;
+  vec4 r5;
+  vec4 r6;
+  vec4 r7;
+  vec4 r8;
+  vec4 r9;
+
+/*0*/	r0.xyzw = (texture(s_diffuse_map, vsOut_T1.xyxx.st)).xyzw;
+/*1*/	r1.xyzw = (texture(s_specular_colour_map, vsOut_T1.xyxx.st)).xyzw;
+/*2*/	r2.xyzw = (texture(s_colour_mask_map, vsOut_T4.xyxx.st)).xyzw;
+/*3*/	r3.xyz = (uintBitsToFloat(uvec4(equal(vsOut_P1.wwww, vec4(1.000000, 2.000000, 3.000000, 0.000000))) * 0xffffffffu)).xyz;
+/*4*/	r4.xyz = (mix(vec4(1.000000, 1.000000, 1.000000, 0), vsOut_P1.xyzx, greaterThan(floatBitsToUint(r3.xxxx), uvec4(0)))).xyz;
+/*5*/	r1.w = saturate(vsOut_P1.w);
+/*6*/	r4.xyz = (r4.xyzx + -cb3.data[0].xyzx).xyz;
+/*7*/	r4.xyz = (r1.wwww * r4.xyzx + cb3.data[0].xyzx).xyz;
+/*8*/	r3.xyw = (mix(vec4(1.000000, 1.000000, 0, 1.000000), vsOut_P1.xyxz, greaterThan(floatBitsToUint(r3.yyyy), uvec4(0)))).xyw;
+/*9*/	r3.xyw = (r3.xyxw + -cb3.data[1].xyxz).xyw;
+/*10*/	r3.xyw = (r1.wwww * r3.xyxw + cb3.data[1].xyxz).xyw;
+/*11*/	r5.xyz = (mix(vec4(1.000000, 1.000000, 1.000000, 0), vsOut_P1.xyzx, greaterThan(floatBitsToUint(r3.zzzz), uvec4(0)))).xyz;
+/*12*/	r5.xyz = (r5.xyzx + -cb3.data[2].xyzx).xyz;
+/*13*/	r5.xyz = (r1.wwww * r5.xyzx + cb3.data[2].xyzx).xyz;
+/*14*/	r4.xyz = (r4.xyzx * r0.xyzx + -r0.xyzx).xyz;
+/*15*/	r0.xyz = (r2.xxxx * r4.xyzx + r0.xyzx).xyz;
+/*16*/	r3.xyz = (r3.xywx * r0.xyzx + -r0.xyzx).xyz;
+/*17*/	r0.xyz = (r2.yyyy * r3.xyzx + r0.xyzx).xyz;
+/*18*/	r2.xyw = (r5.xyxz * r0.xyxz + -r0.xyxz).xyw;
+/*19*/	r0.xyz = (r2.zzzz * r2.xywx + r0.xyzx).xyz;
+/*20*/	r2.xyzw = (texture(s_normal_map, vsOut_T1.zwzz.st)).xyzw;
+/*21*/	r2.xy = (r2.wyww + vec4(0.001961, 0.001961, 0.000000, 0.000000)).xy;
+/*22*/	r2.xy = (r2.xyxx * vec4(2.000000, 2.000000, 0.000000, 0.000000) + vec4(-1.000000, -1.000000, 0.000000, 0.000000)).xy;
+/*23*/	r1.w = dot(vec2(r2.xyxx), vec2(r2.xyxx));
+/*24*/	r1.w = -r1.w + 1.000000;
+/*25*/	r1.w = max(r1.w, 0.000000);
+/*26*/	r3.z = sqrt(r1.w);
+/*27*/	r4.xyzw = (texture(s_gloss_map, vsOut_T1.xyxx.st)).xyzw;
+/*28*/	r5.xyzw = (texture(s_decal_dirt_mask, vsOut_T1.xyxx.st)).xyzw;
+/*29*/	r2.zw = (vsOut_T1.xxxy * cb2.data[2].xxxy + vsOut_T6.xxxy).zw;
+/*30*/	r6.xyzw = (texture(s_decal_dirt_map, r2.zwzz.st)).xyzw;
+/*31*/	r2.zw = (r6.xxxy * vec4(0.000000, 0.000000, 2.000000, 2.000000) + vec4(0.000000, 0.000000, -1.000000, -1.000000)).zw;
+/*32*/	r1.w = r5.w * r6.w;
+/*33*/	r5.xyz = (-r0.xyzx + vec4(0.030000, 0.025000, 0.020000, 0.000000)).xyz;
+/*34*/	r0.xyz = (r1.wwww * r5.xyzx + r0.xyzx).xyz;
+/*35*/	r3.xy = (r2.zwzz * r5.wwww + r2.xyxx).xy;
+/*36*/	r2.x = dot(vec3(r3.xyzx), vec3(r3.xyzx));
+/*37*/	r2.x = inversesqrt(r2.x);
+/*38*/	r2.yzw = (r1.wwww * r1.xxyz).yzw;
+/*39*/	r1.xyz = (r2.yzwy * vec4(-0.990000, -0.990000, -0.990000, 0.000000) + r1.xyzx).xyz;
+/*40*/	r5.xyzw = cb0.data[26].xxxx * vec4(1.500000, 0.200000, 0.670000, 0.800000);
+/*41*/	r2.yzw = sin(vec3(r5.xxyz));
+/*42*/	r1.w = r2.z * r2.y;
+/*43*/	r1.w = r2.w * r1.w;
+/*44*/	r1.w = r1.w * 0.500000 + 1.000000;
+/*45*/	r1.w = r1.w * 0.800000 + r5.w;
+/*46*/	r2.yzw = (cb0.data[26].xxxx * vec4(0.000000, 2.500000, 0.300000, 0.870000)).yzw;
+/*47*/	r2.yzw = sin(vec3(r2.yyzw));
+/*48*/	r2.y = r2.z * r2.y;
+/*49*/	r2.y = r2.w * r2.y;
+/*50*/	r2.y = r2.y * 0.500000 + 1.000000;
+/*51*/	r2.z = r2.y * 0.400000;
+/*52*/	r2.y = r2.y * 0.500000 + r5.y;
+/*53*/	r4.zw = (r1.wwww * vec4(0.000000, 0.000000, 0.200000, 0.200000) + vsOut_T1.xxxy).zw;
+/*54*/	r5.xyzw = (texture(normal0_sampler, r4.zwzz.st)).xyzw;
+/*55*/	r4.zw = (r5.wwwy + vec4(0.000000, 0.000000, 0.001961, 0.001961)).zw;
+/*56*/	r5.xy = (r4.zwzz * vec4(2.000000, 2.000000, 0.000000, 0.000000) + vec4(-1.000000, -1.000000, 0.000000, 0.000000)).xy;
+/*57*/	r1.w = dot(vec2(r5.xyxx), vec2(r5.xyxx));
+/*58*/	r1.w = -r1.w + 1.000000;
+/*59*/	r1.w = max(r1.w, 0.000000);
+/*60*/	r5.z = sqrt(r1.w);
+/*61*/	r2.yw = (r2.yyyy * vec4(0.000000, 0.500000, 0.000000, 0.200000) + vsOut_T1.xxxy).yw;
+/*62*/	r6.xyzw = (texture(normal1_sampler, r2.ywyy.st)).xyzw;
+/*63*/	r2.yw = (r6.wwwy + vec4(0.000000, 0.001961, 0.000000, 0.001961)).yw;
+/*64*/	r2.yw = (r2.yyyw * vec4(0.000000, 2.000000, 0.000000, 2.000000) + vec4(0.000000, -1.000000, 0.000000, -1.000000)).yw;
+/*65*/	r1.w = dot(vec2(r2.ywyy), vec2(r2.ywyy));
+/*66*/	r1.w = -r1.w + 1.000000;
+/*67*/	r1.w = max(r1.w, 0.000000);
+/*68*/	r6.z = sqrt(r1.w);
+/*69*/	r6.xy = (r2.zzzz * r2.ywyy).xy;
+/*70*/	r2.yzw = (r5.xxyz + r6.xxyz).yzw;
+/*71*/	r1.w = dot(vec3(r2.yzwy), vec3(r2.yzwy));
+/*72*/	r1.w = inversesqrt(r1.w);
+/*73*/	r2.yzw = (r1.wwww * r2.yyzw).yzw;
+/*74*/	r2.xyz = (r3.xyzx * r2.xxxx + r2.yzwy).xyz;
+/*75*/	r1.w = dot(vec3(r2.xyzx), vec3(r2.xyzx));
+/*76*/	r1.w = inversesqrt(r1.w);
+/*77*/	r2.xyz = (r1.wwww * r2.xyzx).xyz;
+/*78*/	r3.xyzw = (texture(s_diffuse_damage_map, vsOut_T1.xyxx.st)).xyzw;
+/*79*/	r3.xyz = (r3.xyzx + vec4(-1.000000, -1.000000, -1.000000, 0.000000)).xyz;
+/*80*/	r3.xyz = (vsOut_T9.xxxx * r3.xyzx + vec4(1.000000, 1.000000, 1.000000, 0.000000)).xyz;
+/*81*/	r5.xyz = (r0.xyzx * r3.xyzx).xyz;
+/*82*/	r1.w = r3.w + -vsOut_T9.x;
+/*83*/	r1.w = uintBitsToFloat((r1.w < 0.000000) ? 0xffffffffu : 0x00000000u);
+/*84*/	if(r1.w != 0) discard;
+/*85*/	r1.w = vsOut_T9.y * 1.700000 + -0.700000;
+/*86*/	r0.w = r0.w + -r1.w;
+/*87*/	r2.w = uintBitsToFloat((r0.w < 0.000000) ? 0xffffffffu : 0x00000000u);
+/*88*/	if(r2.w != 0) discard;
+/*89*/	r1.w = vsOut_T9.y * 1.700000 + -r1.w;
+/*90*/	r1.w = (vec4(1.000000, 1.000000, 1.000000, 1.000000) / vec4(r1.w)).w;
+/*91*/	r0.w = saturate(r0.w * r1.w);
+/*92*/	r1.w = r0.w * -2.000000 + 3.000000;
+/*93*/	r0.w = r0.w * r0.w;
+/*94*/	r4.zw = (-r1.wwww * r0.wwww + vec4(0.000000, 0.000000, 1.000000, 0.975000)).zw;
+/*95*/	r6.xy = (vsOut_T1.xyxx * vec4(1.200000, 1.500000, 0.000000, 0.000000)).xy;
+/*96*/	r7.x = 0;
+/*97*/	r7.y = cb0.data[26].x * 0.050000;
+/*98*/	r6.zw = (vsOut_T1.xxxy * vec4(0.000000, 0.000000, 1.200000, 1.500000) + r7.xxxy).zw;
+/*99*/	r7.xyzw = (texture(s_fire_map, r6.zwzz.st)).xyzw;
+/*100*/	r6.xyzw = (texture(s_fire_map, r6.xyxx.st)).xyzw;
+/*101*/	r0.w = saturate(r7.x * 5.000000);
+/*102*/	r7.xyz = (r0.wwww * vec4(0.530000, 0.070000, -0.120000, 0.000000) + vec4(0.200000, 0.200000, 0.200000, 0.000000)).xyz;
+/*103*/	r0.w = dot(vec3(r5.xyzx), vec3(vec4(0.212600, 0.715200, 0.072200, 0.000000)));
+/*104*/	r0.w = saturate(-r0.w * 15.000000 + 1.000000);
+/*105*/	r1.w = log2(r6.z);
+/*106*/	r1.w = r1.w * 1.800000;
+/*107*/	r1.w = exp2(r1.w);
+/*108*/	r1.w = r1.w * 10.000000;
+/*109*/	r1.w = min(r1.w, 1.000000);
+/*110*/	r0.w = r0.w + r1.w;
+/*111*/	r0.w = r0.w * 0.500000;
+/*112*/	r1.w = -r6.w + 1.000000;
+/*113*/	r1.w = log2(r1.w);
+/*114*/	r1.w = r1.w * r4.z;
+/*115*/	r1.w = exp2(r1.w);
+/*116*/	r1.w = min(r1.w, 1.000000);
+/*117*/	r1.w = r4.z * r1.w;
+/*118*/	r2.w = r6.z * 0.250000;
+/*119*/	r6.xyw = (r7.xyxz * vec4(2.000000, 2.000000, 0.000000, 2.000000) + -r2.wwww).xyw;
+/*120*/	r6.xyw = (r0.wwww * r6.xyxw + r2.wwww).xyw;
+/*121*/	r0.xyz = (-r0.xyzx * r3.xyzx + r6.xywx).xyz;
+/*122*/	r0.xyz = (r1.wwww * r0.xyzx + r5.xyzx).xyz;
+/*123*/	r0.w = max(r4.w, 0.000000);
+/*124*/	r3.xyz = (r6.zzzz * vec4(0.250000, 0.250000, 0.250000, 0.000000) + -r0.xyzx).xyz;
+/*125*/	r0.xyz = (r0.wwww * r3.xyzx + r0.xyzx).xyz;
+/*126*/	r0.w = dot(vec3(r0.xyzx), vec3(vec4(0.212600, 0.715200, 0.072200, 0.000000)));
+/*127*/	r3.xyz = (-r0.xyzx + r0.wwww).xyz;
+/*128*/	r0.xyz = (vsOut_T7.yyyy * r3.xyzx + r0.xyzx).xyz;
+/*129*/	r0.w = dot(vec3(r1.xyzx), vec3(vec4(0.212600, 0.715200, 0.072200, 0.000000)));
+/*130*/	r3.xyz = (-r1.xyzx + r0.wwww).xyz;
+/*131*/	r1.xyz = (vsOut_T7.yyyy * r3.xyzx + r1.xyzx).xyz;
+/*132*/	r0.w = vsOut_T7.y * -r4.y + r4.y;
+/*133*/	r0.w = vsOut_T7.x * -r0.w + r0.w;
+/*134*/	r3.xyz = (r0.xyzx * vec4(5.000000, 5.000000, 5.000000, 0.000000) + vec4(0.200000, 0.200000, 0.200000, 0.000000)).xyz;
+/*135*/	r3.xyz = (-r0.xyzx + r3.xyzx).xyz;
+/*136*/	r0.xyz = saturate(vsOut_T7.xxxx * r3.xyzx + r0.xyzx).xyz;
+/*137*/	r1.w = dot(vec3(vsOut_T3.xyzx), vec3(vsOut_T3.xyzx));
+/*138*/	r1.w = inversesqrt(r1.w);
+/*139*/	r3.xyz = (r1.wwww * vsOut_T3.xyzx).xyz;
+/*140*/	r1.w = dot(vec3(vsOut_T5.xyzx), vec3(vsOut_T5.xyzx));
+/*141*/	r1.w = inversesqrt(r1.w);
+/*142*/	r4.yzw = (r1.wwww * vsOut_T5.xxyz).yzw;
+/*143*/	r1.w = dot(vec3(vsOut_T2.xyzx), vec3(vsOut_T2.xyzx));
+/*144*/	r1.w = inversesqrt(r1.w);
+/*145*/	r5.xyz = (r1.wwww * vsOut_T2.xyzx).xyz;
+/*146*/	r4.yzw = (r2.yyyy * r4.yyzw).yzw;
+/*147*/	r2.xyw = (r2.xxxx * r3.xyxz + r4.yzyw).xyw;
+/*148*/	r2.xyz = (r2.zzzz * r5.xyzx + r2.xywx).xyz;
+/*149*/	r1.w = dot(vec3(r2.xyzx), vec3(r2.xyzx));
+/*150*/	r1.w = inversesqrt(r1.w);
+/*151*/	r2.xyz = (r1.wwww * r2.xyzx).xyz;
+/*152*/	r3.xyz = (vsOut_T0.xyzx + -cb0.data[0].xyzx).xyz;
+/*153*/	r1.w = dot(vec3(r3.xyzx), vec3(r3.xyzx));
+/*154*/	r1.w = inversesqrt(r1.w);
+/*155*/	r3.xyz = (r1.wwww * r3.xyzx).xyz;
+/*156*/	r1.w = -r4.x + 1.000000;
+/*157*/	r2.w = uintBitsToFloat((0.000000 < cb1.data[11].x) ? 0xffffffffu : 0x00000000u);
+/*158*/	r3.w = dot(vec3(r3.xyzx), vec3(r2.xyzx));
+/*159*/	r3.w = r3.w + r3.w;
+/*160*/	r4.yzw = (r2.xxyz * -r3.wwww + r3.xxyz).yzw;
+/*161*/	r5.xyz = (mix(vec4(1.000000, 1.000000, 273.000000, 0), vec4(0.004000, 360.000000, 1.000000, 0), greaterThan(floatBitsToUint(r2.wwww), uvec4(0)))).xyz;
+/*162*/	r6.xy = (r1.wwww * vec4(1.539380, 8.000000, 0.000000, 0.000000)).xy;
+/*163*/	r3.w = cos((r6.x));
+/*164*/	r3.w = inversesqrt(r3.w);
+/*165*/	r3.w = (vec4(1.000000, 1.000000, 1.000000, 1.000000) / vec4(r3.w)).w;
+/*166*/	r5.w = saturate(r0.w * 60.000000);
+/*167*/	r5.w = -r0.w + r5.w;
+/*168*/	r6.xzw = (r2.xxyz * vec4(1.000000, 0.000000, 4.000000, 1.000000)).xzw;
+/*169*/	r7.x = dot(vec3(r6.xzwx), vec3(r6.xzwx));
+/*170*/	r7.x = inversesqrt(r7.x);
+/*171*/	r6.xzw = (r6.xxzw * r7.xxxx).xzw;
+/*172*/	r7.xyz = (uintBitsToFloat(uvec4(lessThan(r6.xzwx, vec4(0.000000, 0.000000, 0.000000, 0.000000))) * 0xffffffffu)).xyz;
+/*173*/	r8.xyz = (mix(cb1.data[2].xyzx, cb1.data[3].xyzx, greaterThan(floatBitsToUint(r7.xxxx), uvec4(0)))).xyz/**/;
+/*174*/	r7.xyw = (mix(cb1.data[4].xyxz, cb1.data[5].xyxz, greaterThan(floatBitsToUint(r7.yyyy), uvec4(0)))).xyw/**/;
+/*175*/	r9.xyz = (mix(cb1.data[6].xyzx, cb1.data[7].xyzx, greaterThan(floatBitsToUint(r7.zzzz), uvec4(0)))).xyz/**/;
+/*176*/	r6.xzw = (r6.xxzw * r6.xxzw).xzw;
+/*177*/	r7.xyz = (r7.xywx * r6.zzzz).xyz;
+/*178*/	r7.xyz = (r6.xxxx * r8.xyzx + r7.xyzx).xyz;
+/*179*/	r6.xzw = (r6.wwww * r9.xxyz + r7.xxyz).xzw;
+/*180*/	r6.xzw = (r5.yyyy * r6.xxzw).xzw;
+/*181*/	r6.xzw = (r0.xxyz * r6.xxzw).xzw;
+/*182*/	r5.y = -r0.w + 1.000000;
+/*183*/	r6.xzw = (r5.yyyy * r6.xxzw).xzw;
+/*184*/	r6.xzw = (r5.xxxx * r6.xxzw).xzw;
+/*185*/	if(floatBitsToUint(cb1.data[0].x) != 0u) {
+/*186*/	  r5.y = dot(vec3(r4.yzwy), vec3(r3.xyzx));
+/*187*/	  r5.y = max(r5.y, 0.000000);
+/*188*/	  r5.y = log2(r5.y);
+/*189*/	  r5.y = r5.y * 10.000000;
+/*190*/	  r5.y = exp2(r5.y);
+/*191*/	  r5.y = r3.w * r5.y;
+/*192*/	  r5.y = r5.y * r5.w + r0.w;
+/*193*/	  r7.x = r1.w * 8.000000;
+/*194*/	  r7.xyzw = (textureLod(s_environment, r4.yzwy.stp, r7.x)).xyzw;
+/*195*/	  r7.xyz = (r5.yyyy * r7.xyzx).xyz;
+/*196*/	  r6.xzw = (r7.xxyz * r1.xxyz + r6.xxzw).xzw;
+/*197*/	}
+/*198*/	r5.y = dot(vec3(r2.xyzx), vec3(-cb1.data[0].yzwy));
+/*199*/	r7.x = max(r5.y, 0.000000);
+/*200*/	r5.y = uintBitsToFloat((0.000000 < r5.y) ? 0xffffffffu : 0x00000000u);
+/*201*/	if(floatBitsToUint(r5.y) != 0u) {
+/*202*/	  r4.y = dot(vec3(-cb1.data[0].yzwy), vec3(r4.yzwy));
+/*203*/	  r4.y = max(r4.y, -1.000000);
+/*204*/	  r4.y = min(r4.y, 1.000000);
+/*205*/	  r4.z = -abs(r4.y) + 1.000000;
+/*206*/	  r4.z = sqrt(r4.z);
+/*207*/	  r4.w = abs(r4.y) * -0.018729 + 0.074261;
+/*208*/	  r4.w = r4.w * abs(r4.y) + -0.212114;
+/*209*/	  r4.w = r4.w * abs(r4.y) + 1.570729;
+/*210*/	  r5.y = r4.z * r4.w;
+/*211*/	  r5.y = r5.y * -2.000000 + 3.141593;
+/*212*/	  r4.y = uintBitsToFloat((r4.y < -r4.y) ? 0xffffffffu : 0x00000000u);
+/*213*/	  r4.y = uintBitsToFloat(floatBitsToUint(r4.y) & floatBitsToUint(r5.y));
+/*214*/	  r4.y = r4.w * r4.z + r4.y;
+/*215*/	  r4.x = r4.x * r4.x;
+/*216*/	    r2.w = (floatBitsToUint(r2.w) > 0x00000000u) ? 0.995900 : -0.000100;
+/*217*/	  r2.w = r4.x * r2.w + r5.x;
+/*218*/	  r2.w = r2.w * 0.500000 + 0.500000;
+/*219*/	  r2.w = r2.w * 2.000000 + -1.000000;
+/*220*/	  r4.x = -r2.w * r2.w + 1.000000;
+/*221*/	  r4.x = max(r4.x, 0.001000);
+/*222*/	  r4.x = log2(r4.x);
+/*223*/	  r4.z = r4.x * 4.950617;
+/*224*/	  r4.x = r4.x * 0.346574 + 4.546885;
+/*225*/	  r4.w = uintBitsToFloat((0.000000 < r2.w) ? 0xffffffffu : 0x00000000u);
+/*226*/	  r2.w = uintBitsToFloat((r2.w < 0.000000) ? 0xffffffffu : 0x00000000u);
+/*227*/	  r2.w = intBitsToFloat(1 + ~floatBitsToInt(r4.w) + floatBitsToInt(r2.w));
+/*228*/	  r2.w = floatBitsToInt(r2.w);
+/*229*/	  r4.z = r4.x * r4.x + -r4.z;
+/*230*/	  r4.z = sqrt(r4.z);
+/*231*/	  r4.x = -r4.x + r4.z;
+/*232*/	  r4.x = max(r4.x, 0.000000);
+/*233*/	  r4.x = sqrt(r4.x);
+/*234*/	  r2.w = r2.w * r4.x;
+/*235*/	  r2.w = r2.w * 1.414214;
+/*236*/	  r2.w = 0.008727 / r2.w;
+/*237*/	  r2.w = max(r2.w, 0.000100);
+/*238*/	  r4.xy = (r4.yyyy + vec4(-0.008727, 0.008727, 0.000000, 0.000000)).xy;
+/*239*/	  r2.w = (vec4(1.000000, 1.000000, 1.000000, 1.000000) / vec4(r2.w)).w;
+/*240*/	  r4.xy = (r2.wwww * r4.xyxx).xy;
+/*241*/	  r4.zw = (r4.xxxy * vec4(0.000000, 0.000000, 0.707107, 0.707107)).zw;
+/*242*/	  r4.zw = (r4.zzzw * r4.zzzw).zw;
+/*243*/	  r8.xyzw = r4.zzww * vec4(0.140012, 0.140012, 0.140012, 0.140012) + vec4(1.273239, 1.000000, 1.273239, 1.000000);
+/*244*/	  r7.yz = (r8.xxzx / r8.yywy).yz;
+/*245*/	  r4.zw = (-r4.zzzw * r7.yyyz).zw;
+/*246*/	  r7.yz = (uintBitsToFloat(uvec4(lessThan(vec4(0.000000, 0.000000, 0.000000, 0.000000), r4.xxyx)) * 0xffffffffu)).yz;
+/*247*/	  r2.w = uintBitsToFloat((r4.x < 0.000000) ? 0xffffffffu : 0x00000000u);
+/*248*/	  r2.w = intBitsToFloat(1 + ~floatBitsToInt(r7.y) + floatBitsToInt(r2.w));
+/*249*/	  r2.w = floatBitsToInt(r2.w);
+/*250*/	  r4.xy = (r4.zwzz * vec4(1.442695, 1.442695, 0.000000, 0.000000)).xy;
+/*251*/	  r4.xy = (exp2(r4.xyxx)).xy;
+/*252*/	  r4.xy = (-r4.xyxx + vec4(1.000000, 1.000000, 0.000000, 0.000000)).xy;
+/*253*/	  r4.xy = (sqrt(r4.xyxx)).xy;
+/*254*/	  r2.w = r2.w * r4.x + 1.000000;
+/*255*/	  r2.w = r2.w * 0.500000;
+/*256*/	  r4.x = 1 + ~floatBitsToInt(r7.z);
+/*257*/	  r4.x = r4.x * r4.y + 1.000000;
+/*258*/	  r2.w = r4.x * 0.500000 + -r2.w;
+/*259*/	  r4.x = min(r7.x, 1.000000);
+/*260*/	  r1.w = r1.w * 1.570796;
+/*261*/	  r1.w = sin(r1.w);
+/*262*/	  r4.x = r4.x + -1.000000;
+/*263*/	  r1.w = r1.w * r4.x + 1.000000;
+/*264*/	  r3.x = dot(vec3(-cb1.data[0].yzwy), vec3(r3.xyzx));
+/*265*/	  r3.x = max(r3.x, 0.000000);
+/*266*/	  r3.x = log2(r3.x);
+/*267*/	  r3.x = r3.x * 10.000000;
+/*268*/	  r3.x = exp2(r3.x);
+/*269*/	  r3.x = r3.w * r3.x;
+/*270*/	  r3.x = r3.x * r5.w + r0.w;
+/*271*/	  r1.w = r1.w * abs(r2.w);
+/*272*/	  r3.xyz = (r3.xxxx * r1.wwww).xyz;
+/*273*/	} else {
+/*274*/	  r3.xyz = (vec4(0, 0, 0, 0)).xyz;
+/*275*/	}
+/*276*/	r4.xyz = saturate(r5.zzzz * r3.xyzx).xyz;
+/*277*/	r4.xyz = (r1.xyzx * r4.xyzx).xyz;
+/*278*/	r3.xyz = (max(r0.wwww, r3.xyzx)).xyz;
+/*279*/	r3.xyz = (-r3.xyzx + vec4(1.000000, 1.000000, 1.000000, 0.000000)).xyz;
+/*280*/	r0.xyz = (r0.xyzx * r7.xxxx).xyz;
+/*281*/	r0.xyz = (r0.xyzx * cb1.data[1].xyzx).xyz;
+/*282*/	r0.xyz = (r3.xyzx * r0.xyzx).xyz;
+/*283*/	r0.xyz = (r5.xxxx * r0.xyzx).xyz;
+/*284*/	r0.xyz = (r4.xyzx * cb1.data[1].xyzx + r0.xyzx).xyz;
+/*285*/	r0.xyz = (r0.xyzx + r6.xzwx).xyz;
+/*286*/	r3.xyz = (-vsOut_T0.xyzx + cb0.data[0].xyzx).xyz;
+/*287*/	r1.w = dot(vec3(r3.xyzx), vec3(r3.xyzx));
+/*288*/	r1.w = inversesqrt(r1.w);
+/*289*/	r3.xyz = (r1.wwww * r3.xyzx).xyz;
+/*290*/	r1.w = dot(vec3(-r3.xyzx), vec3(r2.xyzx));
+/*291*/	r1.w = r1.w + r1.w;
+/*292*/	r2.xyz = (r2.xyzx * -r1.wwww + -r3.xyzx).xyz;
+/*293*/	r4.xyzw = (textureLod(s_environment, r2.xyzx.stp, r6.y)).xyzw;
+/*294*/	r1.w = dot(vec3(r2.xyzx), vec3(-r3.xyzx));
+/*295*/	r1.w = max(r1.w, 0.000000);
+/*296*/	r1.w = log2(r1.w);
+/*297*/	r1.w = r1.w * 10.000000;
+/*298*/	r1.w = exp2(r1.w);
+/*299*/	r1.w = r3.w * r1.w;
+/*300*/	r0.w = r1.w * r5.w + r0.w;
+/*301*/	r2.xyz = (r4.xyzx * r0.wwww).xyz;
+/*302*/	color0.xyz = (r2.xyzx * r1.xyzx + r0.xyzx).xyz;
+/*303*/	color0.w = 2.000000;
+/*304*/	r0.xyz = (vsOut_T0.xyzx).xyz;
+/*305*/	r0.w = 1.000000;
+/*306*/	r1.x = dot(r0.xyzw, cb0.data[9].xyzw);
+/*307*/	r1.y = dot(r0.xyzw, cb0.data[10].xyzw);
+/*308*/	r0.x = dot(r0.xyzw, cb0.data[12].xyzw);
+/*309*/	r0.xy = (r1.xyxx / r0.xxxx).xy;
+/*310*/	r0.zw = (uintBitsToFloat(uvec4(greaterThanEqual(r0.xxxy, cb0.data[34].xxxy)) * 0xffffffffu)).zw;
+/*311*/	r0.xy = (uintBitsToFloat(uvec4(greaterThanEqual(cb0.data[34].zwzz, r0.xyxx)) * 0xffffffffu)).xy;
+/*312*/	r0.x = uintBitsToFloat(floatBitsToUint(r0.x) & floatBitsToUint(r0.z));
+/*313*/	r0.x = uintBitsToFloat(floatBitsToUint(r0.w) & floatBitsToUint(r0.x));
+/*314*/	r0.x = uintBitsToFloat(floatBitsToUint(r0.y) & floatBitsToUint(r0.x));
+/*315*/	r0.x = uintBitsToFloat(~floatBitsToUint(r0.x));
+/*316*/	if(r0.x != 0) discard;
+/*317*/	color1.x = 1.000000;
+/*318*/	return;
+}
